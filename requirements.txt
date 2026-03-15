@@ -1,0 +1,6 @@
+Flask>=3.0
+gunicorn>=21.2
+openai>=1.0
+gtts>=2.5
+moviepy>=2.1
+Pillow>=10.0
