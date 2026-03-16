@@ -35,6 +35,8 @@ from knoxplus import Brand, ContentCreator, SocialPoster, Scheduler, parse_datet
 
 app = Flask(__name__)
 
+  app.config['SOCIAL_CREDENTIALS'] = {}
+
 # In-memory scheduler; note that jobs are not persisted across restarts.
 scheduler = Scheduler()
 
@@ -45,8 +47,12 @@ def _create_engine(data: dict) -> tuple[Brand, ContentCreator, SocialPoster]:
     brand_color = data.get("brand_color", "#000000")
     brand = Brand(name=brand_name, color=brand_color)
     creator = ContentCreator(brand)
-    poster = SocialPoster(brand)
-    return brand, creator, poster
+    
+        # Initialise the poster with stored credentials
+    creds = app.config.get('SOCIAL_CREDENTIALS', {})
+    poster = SocialPoster(brand, credentials=creds)
+
+
 
 
 @app.route("/generate", methods=["POST"])
@@ -69,22 +75,56 @@ def schedule():
     platforms = data.get("platforms", "twitter").split(",")
     if not (topic and when_str):
         return jsonify({"error": "Fields 'topic' and 'when' are required"}), 400
-    brand, creator, poster = _create_engine(data)
-    when = parse_datetime(when_str)
+        brand, creator, _ = _create_engine(data)
+
+
     post_text = creator.generate_post(topic)
     media_path = creator.create_video(post_text)
     def job():
+                poster = SocialPoster(brand, credentials=app.config.get('SOCIAL_CREDENTIALS', {}))
         for platform in platforms:
             poster.post(platform.strip(), post_text, media_path)
+
+            
     scheduler.schedule(when, job)
     return jsonify({"status": "scheduled", "execute_at": when.isoformat()})
 
 
 @app.route("/")
 def index():
-    return (
-        "<h1>KnoxPlus API</h1><p>Use POST /generate or /schedule to generate or schedule posts.</p>"
+    """Render the web interface for KnoxPlus.
+
+    If the templates directory contains an ``index.html`` file it will be
+    served.  Otherwise a simple fallback message is returned.  The
+    interface allows users to input post parameters and schedule
+    publishing without writing curl commands.
+    """
+    try:
+        return render_template("index.html")
+    except Exception:
+        return (
+            "<h1>KnoxPlus API</h1>"
+            "<p>Use POST /generate or /schedule to generate or schedule posts.</p>"
+        )
+
+
     )
+
+
+# Route to configure social media credentials
+@app.route('/configure', methods=['POST'])
+def configure():
+    """Configure social media credentials via POST JSON."""
+    data = request.get_json() or {}
+    credentials_store = app.config.get('SOCIAL_CREDENTIALS', {})
+    # Only update non-empty credentials for known platforms
+    for platform in ['twitter', 'facebook', 'linkedin']:
+        creds = data.get(platform)
+        if creds:
+            credentials_store[platform] = creds
+    app.config['SOCIAL_CREDENTIALS'] = credentials_store
+    return jsonify({'success': True, 'configured': list(credentials_store.keys())})
+
 
 
 if __name__ == "__main__":
