@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KnoxPlus Content Creator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      body {
+        background: linear-gradient(180deg, #f0f4fc 0%, #ffffff 100%);
+        min-height: 100vh;
+      }
+      .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      .hero {
+        text-align: center;
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #472b8a, #0081f2);
+        color: #fff;
+        margin-bottom: 2rem;
+        border-radius: 0 0 1rem 1rem;
+      }
+      .hero h1 {
+        font-weight: 700;
+      }
+      .result-box,
+      .status-box,
+      .config-box {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand navbar-dark bg-primary">
+      <div class="container-fluid">
+        <span class="navbar-brand">KnoxPlus</span>
+        <span class="navbar-text text-light">AI‑Powered Social Media Creator</span>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <h1>Create &amp; Schedule Posts</h1>
+      <p class="lead mb-0">Generate content and plan ahead across all your channels</p>
+    </section>
+
+    <div class="container mb-5">
+      <!-- Generate card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Generate a Post</h2>
+          <p class="card-text">
+            Describe your topic and choose optional branding. KnoxPlus will create an engaging post and media.
+          </p>
+          <form id="generateForm">
+            <div class="mb-3">
+              <label for="gen-topic" class="form-label">Topic <span class="text-danger">*</span></label>
+              <input type="text" id="gen-topic" name="topic" class="form-control" required />
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="gen-brand-name" class="form-label">Brand Name</label>
+                <input type="text" id="gen-brand-name" name="brand_name" class="form-control" value="KnoxPlus" />
+              </div>
+              <div class="col-md-6">
+                <label for="gen-brand-color" class="form-label">Brand Colour</label>
+                <input type="color" id="gen-brand-color" name="brand_color" class="form-control form-control-color" value="#0066cc" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Generate</button>
+          </form>
+          <div id="generateResult" class="alert alert-info result-box mt-3"></div>
+        </div>
+      </div>
+
+      <!-- Schedule card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Schedule a Post</h2>
+          <p class="card-text">
+            Plan your content by specifying when and where it should be published.
+          </p>
+          <form id="scheduleForm">
+            <div class="mb-3">
+              <label for="sched-topic" class="form-label">Topic <span class="text-danger">*</span></label>
+              <input type="text" id="sched-topic" name="topic" class="form-control" required />
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="sched-brand-name" class="form-label">Brand Name</label>
+                <input type="text" id="sched-brand-name" name="brand_name" class="form-control" value="KnoxPlus" />
+              </div>
+              <div class="col-md-6">
+                <label for="sched-brand-color" class="form-label">Brand Colour</label>
+                <input type="color" id="sched-brand-color" name="brand_color" class="form-control form-control-color" value="#0066cc" />
+              </div>
+            </div>
+            <div class="mb-3 mt-3">
+              <label for="sched-platforms" class="form-label">Platforms</label>
+              <input type="text" id="sched-platforms" name="platforms" class="form-control" value="twitter,facebook" />
+              <div class="form-text">Comma separated list: e.g. twitter,facebook,linkedin</div>
+            </div>
+            <div class="mb-3">
+              <label for="sched-when" class="form-label">Publish Time <span class="text-danger">*</span></label>
+              <input type="datetime-local" id="sched-when" name="when" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Schedule</button>
+          </form>
+          <div id="scheduleStatus" class="alert alert-success status-box mt-3"></div>
+        </div>
+      </div>
+
+      <!-- Credentials card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Connect Social Accounts</h2>
+          <p class="card-text">Provide your API credentials so KnoxPlus can publish posts for you.</p>
+          <form id="credentialsForm">
+            <h5>Twitter / X</h5>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label" for="twitter_api_key">API Key</label>
+                <input type="text" id="twitter_api_key" name="twitter[api_key]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="twitter_api_secret">API Secret</label>
+                <input type="text" id="twitter_api_secret" name="twitter[api_secret]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="twitter_access_token">Access Token</label>
+                <input type="text" id="twitter_access_token" name="twitter[access_token]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="twitter_access_token_secret">Access Token Secret</label>
+                <input type="text" id="twitter_access_token_secret" name="twitter[access_token_secret]" class="form-control" />
+              </div>
+            </div>
+
+            <h5>Facebook / Instagram</h5>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label" for="fb_page_id">Page ID</label>
+                <input type="text" id="fb_page_id" name="facebook[page_id]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="fb_access_token">Access Token</label>
+                <input type="text" id="fb_access_token" name="facebook[access_token]" class="form-control" />
+              </div>
+            </div>
+
+            <h5>LinkedIn</h5>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label" for="linkedin_client_id">Client ID</label>
+                <input type="text" id="linkedin_client_id" name="linkedin[client_id]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="linkedin_client_secret">Client Secret</label>
+                <input type="text" id="linkedin_client_secret" name="linkedin[client_secret]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="linkedin_access_token">Access Token</label>
+                <input type="text" id="linkedin_access_token" name="linkedin[access_token]" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="linkedin_page_id">Page ID</label>
+                <input type="text" id="linkedin_page_id" name="linkedin[page_id]" class="form-control" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2">Save Credentials</button>
+          </form>
+          <div id="configStatus" class="alert alert-success config-box mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function handleGenerate(event) {
+        event.preventDefault();
+        const form = event.target;
+        const payload = {
+          topic: form.querySelector('#gen-topic').value,
+          brand_name: form.querySelector('#gen-brand-name').value,
+          brand_color: form.querySelector('#gen-brand-color').value
+        };
+        const resultBox = document.getElementById('generateResult');
+        resultBox.style.display = 'none';
+        try {
+          const res = await fetch('/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('Server error');
+          const data = await res.json();
+          resultBox.className = 'alert alert-info result-box mt-3';
+          resultBox.innerHTML = '<strong>Post:</strong> ' + data.post_text + '<br/><strong>Media:</strong> ' + data.media_path;
+        } catch (err) {
+          resultBox.className = 'alert alert-danger result-box mt-3';
+          resultBox.innerText = 'Error generating post: ' + err;
+        }
+        resultBox.style.display = 'block';
+      }
+
+      async function handleSchedule(event) {
+        event.preventDefault();
+        const form = event.target;
+        const payload = {
+          topic: form.querySelector('#sched-topic').value,
+          brand_name: form.querySelector('#sched-brand-name').value,
+          brand_color: form.querySelector('#sched-brand-color').value,
+          platforms: form.querySelector('#sched-platforms').value,
+          when: form.querySelector('#sched-when').value
+        };
+        const statusBox = document.getElementById('scheduleStatus');
+        statusBox.style.display = 'none';
+        try {
+          const res = await fetch('/schedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('Server error');
+          const data = await res.json();
+          statusBox.className = 'alert alert-success status-box mt-3';
+          statusBox.innerText = 'Scheduled at ' + data.execute_at;
+        } catch (err) {
+          statusBox.className = 'alert alert-danger status-box mt-3';
+          statusBox.innerText = 'Error scheduling post: ' + err;
+        }
+        statusBox.style.display = 'block';
+      }
+
+      async function handleCredentials(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const payload = {};
+        for (const [name, value] of formData.entries()) {
+          if (!value.trim()) continue;
+          const parts = name.split(/[\[\]]/).filter(Boolean);
+          const platform = parts[0];
+          const key = parts[1];
+          if (!payload[platform]) payload[platform] = {};
+          payload[platform][key] = value;
+        }
+        const statusBox = document.getElementById('configStatus');
+        statusBox.style.display = 'none';
+        try {
+          const res = await fetch('/configure', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('Server error');
+          const data = await res.json();
+          statusBox.className = 'alert alert-success config-box mt-3';
+          statusBox.innerText = 'Saved for: ' + data.configured.join(', ');
+        } catch (err) {
+          statusBox.className = 'alert alert-danger config-box mt-3';
+          statusBox.innerText = 'Error saving credentials: ' + err;
+        }
+        statusBox.style.display = 'block';
+      }
+
+      document.getElementById('generateForm').addEventListener('submit', handleGenerate);
+      document.getElementById('scheduleForm').addEventListener('submit', handleSchedule);
+      document.getElementById('credentialsForm').addEventListener('submit', handleCredentials);
+    </script>
+  </body>
+</html>
